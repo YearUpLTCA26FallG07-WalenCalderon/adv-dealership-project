@@ -2,40 +2,29 @@ package com.pluralsight.Entities;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
 public abstract class Contract {
 
-//    Contract will hold information common to all contracts. It should be an abstract
-//    class as you can't create a generic contract.
-//            • Date (as string) of contract
-//• Customer name
-//• Customer email
-//• Vehicle sold
-//• Total price
-//• Monthly payment
-//    Methods will include a constructor and getters and setters for all fields except total
-//    price and monthly payment
     private LocalDateTime dateTime;
     private String name;
     private String gmail;
-    private String vehicleSold;
-    private final BigDecimal totalPrice;
-    private final BigDecimal monthlyPayment;
+    private Vehicle vehicleSold;
 
+    public Contract(LocalDateTime dateTime, String name,
+                    String gmail, Vehicle vehicleSold) {
 
-    public Contract(LocalDateTime dateTime, String name, String gmail, String vehicleSold, BigDecimal totalPrice, BigDecimal monthlyPayment) {
-        this.dateTime = this.dateTime = LocalDateTime.now();;
+        this.dateTime = dateTime;
         this.name = name;
         this.gmail = gmail;
         this.vehicleSold = vehicleSold;
-        this.totalPrice = totalPrice;
-        this.monthlyPayment = monthlyPayment;
     }
 
     public LocalDateTime getDateTime() {
-        return this.dateTime;
+        return dateTime;
     }
 
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
 
     public String getName() {
         return name;
@@ -53,11 +42,11 @@ public abstract class Contract {
         this.gmail = gmail;
     }
 
-    public String getVehicleSold() {
+    public Vehicle getVehicleSold() {
         return vehicleSold;
     }
 
-    public void setVehicleSold(String vehicleSold) {
+    public void setVehicleSold(Vehicle vehicleSold) {
         this.vehicleSold = vehicleSold;
     }
 
