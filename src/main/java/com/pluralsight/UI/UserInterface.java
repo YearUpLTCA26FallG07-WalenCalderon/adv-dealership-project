@@ -1,14 +1,17 @@
 package com.pluralsight.UI;
 
+import com.pluralsight.Entities.Contract;
+import com.pluralsight.Entities.ContractDataManager;
+
 import java.math.BigDecimal;
 import java.util.List;
 
 public class UserInterface {
 
-    private Dealership dealership;
+    private Contract contract;
 
-    private final DealershipFileManager fileManager =
-            new DealershipFileManager();
+    private final ContractDataManager contractDataManager =
+            new ContractDataManager();
 
     public void display() {
 
@@ -18,7 +21,7 @@ public class UserInterface {
 
             System.out.printf(
                     "%n=== %s ===%n",
-                    dealership.getName()
+                    contract.getName()
             );
 
             System.out.println("""

@@ -3,16 +3,14 @@ package com.pluralsight.Entities;
 import java.time.format.DateTimeFormatter;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.io.FileWriter;
+import java.io.FileReader;
 import java.util.StringJoiner;
 
 public class ContractDataManager {
 
-    private static final Path FILE_PATH =
-            Path.of("src/main/resources/contracts.csv");
+    private static final FileReader reader =
+            new FileReader("src/main/resources/contracts.csv");
 
     public void saveContract(Contract contract) {
 
@@ -64,25 +62,25 @@ public class ContractDataManager {
         data.add(String.valueOf(contract.getTotalPrice()));
         data.add(String.valueOf(contract.getMonthlyPayment()));
 
-        // Save contract
-        try {
-
-            Files.createDirectories(FILE_PATH.getParent());
-
-            try (BufferedWriter writer = Files.newBufferedWriter(
-                    FILE_PATH,
-                    StandardCharsets.UTF_8,
-                    StandardOpenOption.CREATE,
-                    StandardOpenOption.APPEND)) {
-
-                writer.write(data.toString());
-                writer.newLine();
-            }
-
-        } catch (IOException e) {
-
-            throw new IllegalStateException(
-                    "Could not save contracts.csv: " + e.getMessage(), e);
-        }
-    }
+//        // Save contract
+//        try {
+//
+//            Files.createDirectories(FILE_PATH.getParent());
+//
+//            try (BufferedWriter writer = Files.newBufferedWriter(
+//                    FILE_PATH,
+//                    StandardCharsets.UTF_8,
+//                    StandardOpenOption.CREATE,
+//                    StandardOpenOption.APPEND)) {
+//
+//                writer.write(data.toString());
+//                writer.newLine();
+//            }
+//
+//        } catch (IOException e) {
+//
+//            throw new IllegalStateException(
+//                    "Could not save contracts.csv: " + e.getMessage(), e);
+//        }
+//    }
 }
