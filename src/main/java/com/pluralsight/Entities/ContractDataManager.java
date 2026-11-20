@@ -1,86 +1,80 @@
 package com.pluralsight.Entities;
 
-import java.time.format.DateTimeFormatter;
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.FileWriter;
-import java.io.FileReader;
-import java.util.StringJoiner;
+import java.io.IOException;
 
 public class ContractDataManager {
 
-    private static final FileReader reader =
-            new FileReader("src/main/resources/contracts.csv");
+    private static final String file =
+            "src/main/resources/contracts.csv";
 
     public void saveContract(Contract contract) {
 
         Vehicle vehicle = contract.getVehicleSold();
 
-        StringJoiner data = new StringJoiner("|");
+        String contractData =
+                contract.getDateTime() + "|" +
+                        contract.getName() + "|" +
+                        contract.getGmail() + "|" +
+                        vehicle.getVin() + "|" +
+                        vehicle.getYear() + "|" +
+                        vehicle.getMake() + "|" +
+                        vehicle.getModel() + "|" +
+                        vehicle.getVehicleType() + "|" +
+                        vehicle.getColor() + "|" +
+                        vehicle.getOdometer() + "|" +
+                        vehicle.getPrice().toPlainString();
 
-        // Identify contract type
+        String record;
+
         if (contract instanceof SalesContract) {
-            data.add("SALE");
+
+            SalesContract salesContract = (SalesContract) contract;
+
+            record =
+                    "SALE|" +
+                            contractData + "|" +
+                            salesContract.getSalesTaxAmount().toPlainString() + "|" +
+                            salesContract.getRecordingFee().toPlainString() + "|" +
+                            salesContract.getProcessingFee().toPlainString() + "|" +
+                            salesContract.getTotalPrice().toPlainString() + "|" +
+                            salesContract.isFinanced() + "|" +
+                            salesContract.getMonthlyPayment().toPlainString();
+
         } else if (contract instanceof LeaseContract) {
-            data.add("LEASE");
+
+            LeaseContract leaseContract = (LeaseContract) contract;
+
+            record =
+                    "LEASE|" +
+                            contractData + "|" +
+                            leaseContract.getExpectedEndingValue().toPlainString() + "|" +
+                            leaseContract.getLeaseFee().toPlainString() + "|" +
+                            leaseContract.getTotalPrice().toPlainString() + "|" +
+                            leaseContract.getMonthlyPayment().toPlainString();
+
         } else {
-            throw new IllegalArgumentException("Unknown contract type.");
+
+            throw new IllegalArgumentException(
+                    "Unsupported contract type."
+            );
         }
 
-        // Common contract information
-        data.add(contract.getDateTime()
-                .format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+        try {
+            FileWriter file = new FileWriter(ContractDataManager.file, true);
+            BufferedWriter writer = new BufferedWriter(file);
 
-        data.add(contract.getName());
-        data.add(contract.getGmail());
+            writer.write(record);
+            writer.newLine();
 
-        // Vehicle information
-        data.add(String.valueOf(vehicle.getVin()));
-        data.add(String.valueOf(vehicle.getYear()));
-        data.add(vehicle.getMake());
-        data.add(vehicle.getModel());
-        data.add(String.valueOf(vehicle.getVehicleType()));
-        data.add(vehicle.getColor());
-        data.add(String.valueOf(vehicle.getOdometer()));
-        data.add(String.valueOf(vehicle.getPrice()));
+            writer.close();
 
-        // Specific contract information
-        if (contract instanceof SalesContract sales) {
+        } catch (IOException e) {
 
-            data.add(String.valueOf(sales.getSalesTaxAmount()));
-            data.add(String.valueOf(sales.getRecordingFee()));
-            data.add(String.valueOf(sales.getProcessingFee()));
-            data.add(String.valueOf(sales.isFinanced()));
-
-        } else if (contract instanceof LeaseContract lease) {
-
-            data.add(String.valueOf(lease.getExpectedEndingValue()));
-            data.add(String.valueOf(lease.getLeaseFee()));
+            throw new IllegalStateException(
+                    "Could not save contract: " + e.getMessage(), e
+            );
         }
-
-        // Final calculations
-        data.add(String.valueOf(contract.getTotalPrice()));
-        data.add(String.valueOf(contract.getMonthlyPayment()));
-
-//        // Save contract
-//        try {
-//
-//            Files.createDirectories(FILE_PATH.getParent());
-//
-//            try (BufferedWriter writer = Files.newBufferedWriter(
-//                    FILE_PATH,
-//                    StandardCharsets.UTF_8,
-//                    StandardOpenOption.CREATE,
-//                    StandardOpenOption.APPEND)) {
-//
-//                writer.write(data.toString());
-//                writer.newLine();
-//            }
-//
-//        } catch (IOException e) {
-//
-//            throw new IllegalStateException(
-//                    "Could not save contracts.csv: " + e.getMessage(), e);
-//        }
-//    }
+    }
 }

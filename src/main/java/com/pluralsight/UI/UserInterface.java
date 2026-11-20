@@ -1,17 +1,18 @@
 package com.pluralsight.UI;
 
-import com.pluralsight.Entities.Contract;
-import com.pluralsight.Entities.ContractDataManager;
+import com.pluralsight.Entities.Dealership;
+import com.pluralsight.Entities.DealershipFileManager;
+import com.pluralsight.Entities.Vehicle;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public class UserInterface {
 
-    private Contract contract;
+    private Dealership dealership;
 
-    private final ContractDataManager contractDataManager =
-            new ContractDataManager();
+    private final DealershipFileManager fileManager =
+            new DealershipFileManager();
 
     public void display() {
 
@@ -21,7 +22,7 @@ public class UserInterface {
 
             System.out.printf(
                     "%n=== %s ===%n",
-                    contract.getName()
+                    dealership.getName()
             );
 
             System.out.println("""
@@ -168,7 +169,7 @@ public class UserInterface {
     private void processGetByVehicleTypeRequest() {
 
         String type = Console.promptForString(
-                "Vehicle type (car, truck, SUV, van): "
+                "com.pluralsight.Entities.DealershipFileManager.Vehicle type (car, truck, SUV, van): "
         );
 
         displayVehicles(
@@ -235,7 +236,7 @@ public class UserInterface {
                 || color.contains("|")) {
 
             System.out.println(
-                    "Invalid vehicle information. Vehicle was not added."
+                    "Invalid vehicle information. com.pluralsight.Entities.DealershipFileManager.Vehicle was not added."
             );
 
             return;
@@ -257,7 +258,7 @@ public class UserInterface {
         fileManager.saveDealership(dealership);
 
         System.out.println(
-                "Vehicle added and saved."
+                "com.pluralsight.Entities.DealershipFileManager.Vehicle added and saved."
         );
     }
 
@@ -276,7 +277,7 @@ public class UserInterface {
                 fileManager.saveDealership(dealership);
 
                 System.out.println(
-                        "Vehicle removed and saved."
+                        "com.pluralsight.Entities.DealershipFileManager.Vehicle removed and saved."
                 );
 
                 return;
