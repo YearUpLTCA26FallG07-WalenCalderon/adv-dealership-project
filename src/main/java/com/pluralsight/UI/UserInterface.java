@@ -83,27 +83,41 @@ public class UserInterface {
 
         int vin = Console.promptForInt("Vehicle VIN: ");
 
-        String customerName = Console.promptForString(
-                "Customer name: "
-        ).trim();
-
-
-        String customerEmail = Console.promptForString(
-                "Customer email: "
-        ).trim();
-
-        char contractType = Console.promptForChar(
-                "Contract type (S = Sale, L = Lease): ",
-                "SL"
-        );
-
-        // Search for vehicle vin.
         Vehicle vehicle = dealership.getVehicleByVin(vin);
 
         if (vehicle == null) {
             System.out.println("No vehicle found with that VIN.");
             return;
         }
+
+        System.out.println("Selected vehicle: " + vehicle);
+
+        String customerName = Console.promptForString(
+                "Customer name: "
+        ).trim();
+
+        String customerEmail = Console.promptForString(
+                "Customer email: "
+        ).trim();
+
+        if (customerName.isBlank()
+                || customerEmail.isBlank()
+                || customerName.contains("|")
+                || customerEmail.contains("|")) {
+
+            System.out.println(
+                    "Name and email are required and cannot contain '|'."
+            );
+            return;
+        }
+
+        char contractType = Console.promptForChar(
+                "Contract type (S = Sale, L = Lease): ",
+                "SL"
+        );
+
+        Contract contract;
+
         switch (contractType) {
             case 'S' -> {
                 boolean financed = Console.promptForChar(
@@ -111,30 +125,16 @@ public class UserInterface {
                         "YN"
                 ) == 'Y';
 
-                //create sales contract.
-
-                SalesContract contract = new SalesContract(
+                contract = new SalesContract(
                         LocalDateTime.now(),
                         customerName,
                         customerEmail,
                         vehicle,
                         financed
                 );
-                //saving contract
-                ContractDataManager contractDataManager = new ContractDataManager();
-                contractDataManager.saveContract(contract);
-
-                //Removing vehicle from dealership
-                dealership.removeVehicle(vehicle);
-                fileManager.saveDealership(dealership);
-
-                System.out.println("Sale completed and saved.");
-
             }
 
             case 'L' -> {
-                LeaseContract contract;
-
                 try {
                     contract = new LeaseContract(
                             LocalDateTime.now(),
@@ -146,20 +146,26 @@ public class UserInterface {
                     System.out.println(e.getMessage());
                     return;
                 }
+            }
 
-                ContractDataManager contractDataManager =
-                        new ContractDataManager();
-
-                contractDataManager.saveContract(contract);
-
-                dealership.removeVehicle(vehicle);
-                fileManager.saveDealership(dealership);
-
-                System.out.println("Total price: $" + contract.getTotalPrice());
-                System.out.println("Monthly payment: $" + contract.getMonthlyPayment());
-                System.out.println("Lease completed and saved.");
+            default -> {
+                System.out.println("Invalid contract type.");
+                return;
             }
         }
+
+        System.out.println("Total price: $" + contract.getTotalPrice());
+        System.out.println("Monthly payment: $" + contract.getMonthlyPayment());
+
+        ContractDataManager contractDataManager =
+                new ContractDataManager();
+
+        contractDataManager.saveContract(contract);
+
+        dealership.removeVehicle(vehicle);
+        fileManager.saveDealership(dealership);
+
+        System.out.println("Contract completed and saved.");
     }
 
 
