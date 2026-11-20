@@ -1,8 +1,8 @@
 package com.pluralsight.UI;
 
-import com.pluralsight.Entities.Dealership;
-import com.pluralsight.Entities.DealershipFileManager;
-import com.pluralsight.Entities.Vehicle;
+import com.pluralsight.Entities.*;
+
+import java.time.LocalDateTime;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -35,6 +35,7 @@ public class UserInterface {
                     7 - List ALL vehicles
                     8 - Add a vehicle
                     9 - Remove a vehicle
+                    10 - Sell / Lease a vehicle
                     99 - Quit
                     """);
 
@@ -62,6 +63,8 @@ public class UserInterface {
 
                 case 9 -> processRemoveVehicleRequest();
 
+                case 10 -> processSellLeaseRequest();
+
                 case 99 -> {
                     System.out.println("Goodbye!");
                     return;
@@ -73,6 +76,94 @@ public class UserInterface {
             }
         }
     }
+
+    private void processSellLeaseRequest() {
+
+        System.out.println("=== Sell / Lease a Vehicle ===");
+
+        int vin = Console.promptForInt("Vehicle VIN: ");
+
+        String customerName = Console.promptForString(
+                "Customer name: "
+        ).trim();
+
+
+        String customerEmail = Console.promptForString(
+                "Customer email: "
+        ).trim();
+
+        char contractType = Console.promptForChar(
+                "Contract type (S = Sale, L = Lease): ",
+                "SL"
+        );
+
+        // Search for vehicle vin.
+        Vehicle vehicle = dealership.getVehicleByVin(vin);
+
+        if (vehicle == null) {
+            System.out.println("No vehicle found with that VIN.");
+            return;
+        }
+        switch (contractType) {
+            case 'S' -> {
+                boolean financed = Console.promptForChar(
+                        "Would you like to finance? (Y/N): ",
+                        "YN"
+                ) == 'Y';
+
+                //create sales contract.
+
+                SalesContract contract = new SalesContract(
+                        LocalDateTime.now(),
+                        customerName,
+                        customerEmail,
+                        vehicle,
+                        financed
+                );
+                //saving contract
+                ContractDataManager contractDataManager = new ContractDataManager();
+                contractDataManager.saveContract(contract);
+
+                //Removing vehicle from dealership
+                dealership.removeVehicle(vehicle);
+                fileManager.saveDealership(dealership);
+
+                System.out.println("Sale completed and saved.");
+
+            }
+
+            case 'L' -> {
+                LeaseContract contract;
+
+                try {
+                    contract = new LeaseContract(
+                            LocalDateTime.now(),
+                            customerName,
+                            customerEmail,
+                            vehicle
+                    );
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                    return;
+                }
+
+                ContractDataManager contractDataManager =
+                        new ContractDataManager();
+
+                contractDataManager.saveContract(contract);
+
+                dealership.removeVehicle(vehicle);
+                fileManager.saveDealership(dealership);
+
+                System.out.println("Total price: $" + contract.getTotalPrice());
+                System.out.println("Monthly payment: $" + contract.getMonthlyPayment());
+                System.out.println("Lease completed and saved.");
+            }
+        }
+    }
+
+
+
 
     private void init() {
 

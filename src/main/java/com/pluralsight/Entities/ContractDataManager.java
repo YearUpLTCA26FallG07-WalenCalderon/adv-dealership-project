@@ -65,7 +65,7 @@ public class ContractDataManager {
             FileWriter file = new FileWriter(ContractDataManager.file, true);
             BufferedWriter writer = new BufferedWriter(file);
 
-            writer.write(record);
+            writer.write(record + "\n");
             writer.newLine();
 
             writer.close();
